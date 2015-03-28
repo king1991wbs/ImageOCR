@@ -7,7 +7,7 @@
 *data field:
 *
 *function field:
-*imgTextLocat  : find text area and saved in vector
+*extractTextRegion  : find text area and saved in vector
 *
 */
 #ifndef TEXT_REGION_EXTRACTER_H
@@ -28,9 +28,10 @@ using namespace cv;
 struct TextBox
 {
 	unsigned int level;
-	bool belonged;//is already belonged to some other box
 	Point p0;//top left
 	Point p2;//bottom right
+	unsigned int width;
+	unsigned int height;
 };
 
 class TextRegionExtracter
@@ -41,10 +42,13 @@ public:
 public:
 	int extractTextRegion(const Mat &biImg, vector<Rect> &txtPos);
 private:
-	bool mySimiSize( Point a0 , Point a2 , Point b0 , Point b2 );
-	bool myBigSize( Point a0 , Point a2 , Point b0 , Point b2 );
-	bool myNearRect( Point a0 , Point a2 , Point b0 , Point b2 );
-	void myCombineLines( vector<TextBox> &vi );
+	bool isTextArea( const Rect & bBox, const vector<Point> & contour);
+	void setLevel( TextBox & BoxL, TextBox & BoxR, unsigned int & levelCounter );
+	bool isConnected(const TextBox & BoxL, const TextBox &  BoxR);
+	bool simiSize( Point a0 , Point a2 , Point b0 , Point b2 );
+	bool bigSize( Point a0 , Point a2 , Point b0 , Point b2 );
+	bool nearRect( Point a0 , Point a2 , Point b0 , Point b2 );
+	void combineLines( vector<TextBox> &vi );
 
 protected:
 	/* data */
