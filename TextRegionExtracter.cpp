@@ -181,19 +181,32 @@ void TextRegionExtracter::setLevel( TextBox & BoxL, TextBox & BoxR, unsigned int
 		//save in pairS
 	}
 }
+
 bool TextRegionExtracter::isConnected( const TextBox & BoxL, const TextBox &  BoxR )
 {
+	Point Ap0 = BoxR.p0;
+	Point Ap2 = BoxR.p2;
 	Point Bp0 = BoxL.p0;
 	Point Bp2 = BoxL.p2;
-	if( !nearRect( Bp0, Bp2, BoxR.p0 , BoxR.p2 ) )
+
+//make sure the y aix distance of two boxes is not too long
+	if( !nearRect( Bp0, Bp2, Ap0 , Ap2 ) )
 		return false;
-		
-	if( !(abs(BoxL.p0.y - BoxR.p2.y) < max(BoxL.height, BoxR.height) || 
-		abs(BoxL.p2.y - BoxR.p0.y) < max(BoxL.height, BoxR.height)) )
+	//two boxs intersects with each other
+	if( Ap0.x < Bp2.x && Ap2.x > Bp0.x || Bp0.x < Ap2.x && Bp2.x > Ap0.x )
+		return true;
+//two boxes not intersect directly but very close
+	if( (Bp0.x - Ap2.x) > min(BoxL.width, BoxR.width) 
+		|| (Ap0.x - Bp2.x) > min(BoxL.width, BoxR.width))
 		return false;
-	if( !(abs(BoxL.p0.x - BoxR.p2.x) < max(BoxL.height, BoxR.height) || 
-		abs(BoxL.p2.x - BoxR.p0.x) < max(BoxL.height, BoxR.height)) )
+	/*
+	if( !(abs(Bp0.y - Ap2.y) < max(BoxL.height, BoxR.height) || 
+		abs(Bp2.y - Ap0.y) < max(BoxL.height, BoxR.height)) )
 		return false;
+	if( !(abs(Bp0.x - Ap2.x) < max(BoxL.height, BoxR.height) || 
+		abs(Bp2.x - Ap0.x) < max(BoxL.height, BoxR.height)) )
+		return false;
+*/
 	return true;
 }
 /*
